@@ -4,11 +4,9 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC6372.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract Governance is Ownable, ERC20, ERC20Permit, IERC6372 {
+contract Governance is Ownable, ERC20, IERC6372 {
 
     /*
      * The original token contract
@@ -61,7 +59,6 @@ contract Governance is Ownable, ERC20, ERC20Permit, IERC6372 {
     constructor(address initialOwner)
         ERC20("Voting Brume", "VBRUME")
         Ownable(initialOwner)
-        ERC20Permit("Voting Brume")
     {}
 
     /*
@@ -128,7 +125,7 @@ contract Governance is Ownable, ERC20, ERC20Permit, IERC6372 {
     /*
      * Hash a set of transactions
      */
-    function hash(
+    function hashOf(
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas
@@ -147,7 +144,7 @@ contract Governance is Ownable, ERC20, ERC20Permit, IERC6372 {
         /*
          * Set the pending proposal and replace the previous one
          */
-        proposal = Proposal(hash(targets, values, calldatas), block.timestamp);
+        proposal = Proposal(hashOf(targets, values, calldatas), block.timestamp);
     }
 
     /*
@@ -158,7 +155,7 @@ contract Governance is Ownable, ERC20, ERC20Permit, IERC6372 {
         uint256[] memory values,
         bytes[] memory calldatas
     ) public onlyOwner {
-        uint256 callshash = hash(targets, values, calldatas);
+        uint256 callshash = hashOf(targets, values, calldatas);
 
         /*
          * Check if the proposal is the same
