@@ -1,2 +1,6 @@
 .deps
 artifacts
+
+# Compiler files
+cache/
+out/
