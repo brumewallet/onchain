@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -28,10 +29,30 @@ contract Governance is Ownable, ERC20, ERC20Permit {
      */
     mapping(address => uint256) public powerOf;
 
+    struct Proposal {
+        uint256 callshash;
+        uint256 timestamp;
+    }
+
     /*
-     * Insufficient power to acquire the governance
+     * The pending proposal
+     */
+    Proposal public proposal;
+
+    /*
+     * You don't have enough power to acquire the governance
      */
     error GovernanceInsufficientPower(address account);
+
+    /*
+     * You attempted to execute an invalid proposal
+     */
+    error GovernanceInvalidExecution(uint256 callshash);
+    
+    /*
+     * You attempted to execute a proposal too early
+     */
+    error GovernancePrematureExecution(uint256 timestamp);
     
     constructor(address initialOwner)
         ERC20("Voting Brume", "VBRUME")
@@ -100,5 +121,52 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         token.transfer(_msgSender(), amount);
     }
 
+    /*
+     * Hash a set of transactions
+     */
+    function hash(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas
+    ) public pure returns (uint256) {
+        return uint256(keccak256(abi.encode(targets, values, calldatas)));
+    }
+
+    /*
+     * Propose a new set of transactions
+     */
+    function propose(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas
+    ) public onlyOwner {
+        proposal = Proposal(hash(targets, values, calldatas), block.timestamp);
+    }
+
+    /*
+     * Execute the pending proposal
+     */
+    function execute(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas
+    ) public onlyOwner {
+        uint256 callshash = hash(targets, values, calldatas);
+
+        if (callshash != proposal.callshash) {
+            revert GovernanceInvalidExecution(callshash);
+        }
+
+        if (block.timestamp < proposal.timestamp + delay) {
+            revert GovernancePrematureExecution(block.timestamp);
+        }
+
+        for (uint256 i = 0; i < targets.length; i++) {
+            (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
+            Address.verifyCallResult(success, returndata);
+        }
+
+        proposal = Proposal(0, 0);
+    }
 
 }

@@ -6,3 +6,9 @@ An implementation of a [Decentralized Headed Autonomous Organization](https://gi
 - Not yet finished
 - Not yet audited
 - Not yet deployed
+
+## Development
+
+```bash
+remixd -s .
+```
