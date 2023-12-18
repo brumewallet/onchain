@@ -27,7 +27,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     IERC20 public immutable token;
     
     /**
-     * The timelock delay in seconds (recommended: 2 weeks = 2 * 7 * 24 * 60 * 60)
+     * The timelock delay in seconds (we recommend 2 weeks = 2 * 7 * 24 * 60 * 60)
      */
     uint256 public delay;
 
