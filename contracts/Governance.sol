@@ -143,6 +143,9 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         uint256[] memory values,
         bytes[] memory calldatas
     ) public onlyOwner {
+        /*
+         * Set the pending proposal and replace the previous one
+         */
         proposal = Proposal(hash(targets, values, calldatas), block.timestamp);
     }
 
@@ -156,19 +159,31 @@ contract Governance is Ownable, ERC20, ERC20Permit {
     ) public onlyOwner {
         uint256 callshash = hash(targets, values, calldatas);
 
+        /*
+         * Check if the proposal is the same
+         */
         if (callshash != proposal.callshash) {
             revert GovernanceInvalidExecution(callshash);
         }
 
+        /*
+         * Check if the proposal is ready to be executed
+         */
         if (block.timestamp < proposal.timestamp + delay) {
             revert GovernancePrematureExecution(block.timestamp);
         }
 
+        /*
+         * Execute the proposal
+         */
         for (uint256 i = 0; i < targets.length; i++) {
             (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
             Address.verifyCallResult(success, returndata);
         }
 
+        /*
+         * Reset the proposal
+         */
         proposal = Proposal(0, 0);
     }
 
