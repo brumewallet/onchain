@@ -27,6 +27,11 @@ contract Governance is Ownable, ERC20, ERC20Permit {
      * Power by candidate
      */
     mapping(address => uint256) public powerOf;
+
+    /*
+     * Insufficient power to acquire the governance
+     */
+    error GovernanceInsufficientPower(address account);
     
     constructor(address initialOwner)
         ERC20("Voting Brume", "VBRUME")
@@ -34,7 +39,10 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         ERC20Permit("Voting Brume")
     {}
 
-    function _update(address from, address to, uint256 value) internal virtual override  {
+    /**
+     * Recompute voting power when a transfer happens
+     */
+    function _update(address from, address to, uint256 value) internal override  {
         super._update(from, to, value);
 
         if (from != address(0)) {
@@ -63,19 +71,30 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         }
     }
 
+    /*
+     * Acquire the governance
+     */
     function acquire() public {
         if (owner() != address(0)) {
-            require(powerOf[owner()] < powerOf[_msgSender()], "Governance: insufficient power");
+            if (powerOf[_msgSender()] < powerOf[owner()]) {
+              revert GovernanceInsufficientPower(_msgSender());
+            }
         }
 
         _transferOwnership(_msgSender());
     }
 
+    /*
+     * Increase your voting power by wrapping `amount` of your original tokens
+     */
     function wrap(uint256 amount) public {
         token.transferFrom(_msgSender(), address(this), amount);
         _mint(_msgSender(), amount);
     }
 
+    /*
+     * Decrease your voting power by unwrapping `amount` of your original tokens
+     */
     function unwrap(uint256 amount) public {
         _burn(_msgSender(), amount);
         token.transfer(_msgSender(), amount);
