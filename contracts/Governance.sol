@@ -96,7 +96,7 @@ contract Governance is Ownable, ERC20, ERC20Permit {
     }
 
     /*
-     * Acquire the governance
+     * Acquire the governance if you have the most voting power
      */
     function acquire() public {
         if (owner() != address(0)) {
