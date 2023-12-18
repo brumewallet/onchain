@@ -21,27 +21,27 @@ contract Token is Ownable, ERC20, ERC20Burnable {
 
 contract Governance is Ownable, ERC20, ERC20Burnable {
 
-    /*
+    /**
      * The original token contract
      */
-    IERC20 public immutable token = Token(address(this));
+    IERC20 public immutable token;
     
-    /*
-     * The timelock delay in seconds
+    /**
+     * The timelock delay in seconds (recommended: 2 weeks = 2 * 7 * 24 * 60 * 60)
      */
-    uint256 public delay = 2 * 7 * 24 * 60 * 60;
+    uint256 public delay;
 
-    /*
+    /**
      * Vote by token holder
      */
     mapping(address => address) public voteOf;
 
-    /*
+    /**
      * Power by candidate
      */
     mapping(address => uint256) public powerOf;
 
-    /*
+    /**
      * A pending proposal
      */
     struct Proposal {
@@ -49,32 +49,40 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         uint256 timestamp;
     }
 
-    /*
+    /**
      * The pending proposal
      */
     Proposal public proposal;
 
-    /*
-     * You don't have enough power to acquire the governance
+    /**
+     * @dev You don't have enough power to acquire the governance
      */
     error GovernanceInsufficientPower(address account);
 
-    /*
-     * You attempted to execute an invalid proposal
+    /**
+     * @dev You attempted to execute an invalid proposal
      */
     error GovernanceInvalidExecution(uint256 callshash);
     
-    /*
-     * You attempted to execute a proposal too early
+    /**
+     * @dev You attempted to execute a proposal too early
      */
     error GovernancePrematureExecution(uint256 timestamp);
-    
-    constructor(address initialOwner)
-        ERC20("Voting Brume", "VBRUME")
-        Ownable(initialOwner)
-    {}
 
-    /*
+    /**
+     * @dev The caller account is not authorized to perform an operation.
+     */
+    error GovernanceUnauthorizedAccount(address account);
+    
+    constructor(IERC20 token_, address owner_, uint256 delay_)
+        ERC20("Voting Brume", "VBRUME")
+        Ownable(owner_)
+    {
+        token = token_;
+        delay = delay_;
+    }
+
+    /**
      * Recompute voting power when a transfer happens
      */
     function _update(address from, address to, uint256 value) internal override  {
@@ -89,7 +97,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         }
     }
 
-    /* 
+    /** 
      * Delegate your voting power to `voted`
      */
     function vote(address voted) public {
@@ -106,7 +114,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         }
     }
 
-    /*
+    /**
      * Acquire the governance if you have the most voting power
      */
     function acquire() public {
@@ -119,7 +127,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         _transferOwnership(_msgSender());
     }
 
-    /*
+    /**
      * Increase your voting power by wrapping `amount` of your original tokens
      */
     function wrap(uint256 amount) public {
@@ -127,7 +135,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         _mint(_msgSender(), amount);
     }
 
-    /*
+    /**
      * Decrease your voting power by unwrapping `amount` of your original tokens
      */
     function unwrap(uint256 amount) public {
@@ -135,7 +143,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         token.transfer(_msgSender(), amount);
     }
 
-    /*
+    /**
      * Hash a set of transactions
      */
     function hashOf(
@@ -146,7 +154,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         return uint256(keccak256(abi.encode(targets, values, calldatas)));
     }
 
-    /*
+    /**
      * Propose a new set of transactions
      */
     function propose(
@@ -154,13 +162,13 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         uint256[] memory values,
         bytes[] memory calldatas
     ) public onlyOwner {
-        /*
+        /**
          * Set the pending proposal and replace the previous one
          */
         proposal = Proposal(hashOf(targets, values, calldatas), block.timestamp);
     }
 
-    /*
+    /**
      * Execute the pending proposal
      */
     function execute(
@@ -170,21 +178,21 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     ) public onlyOwner {
         uint256 callshash = hashOf(targets, values, calldatas);
 
-        /*
+        /**
          * Check if the proposal is the same
          */
         if (callshash != proposal.callshash) {
             revert GovernanceInvalidExecution(callshash);
         }
 
-        /*
+        /**
          * Check if the proposal is ready to be executed
          */
         if (block.timestamp < (proposal.timestamp + delay)) {
             revert GovernancePrematureExecution(block.timestamp);
         }
 
-        /*
+        /**
          * Execute the proposal
          */
         for (uint256 i = 0; i < targets.length; i++) {
@@ -192,16 +200,33 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
             Address.verifyCallResult(success, returndata);
         }
 
-        /*
+        /**
          * Reset the proposal
          */
         proposal = Proposal(0, 0);
     }
 
-    /*
-     * Set the timelock delay (can only be called from a proposal)
+    /***
+     * @dev Throws if called by any account other than this contract.
      */
-    function setDelay(uint256 _delay) private {
+     modifier onlySelf() {
+        _checkSelf();
+        _;
+    }
+
+    /***
+     * @dev Throws if the sender is not this contract.
+     */
+    function _checkSelf() internal view {
+        if (address(this) != _msgSender()) {
+            revert GovernanceUnauthorizedAccount(_msgSender());
+        }
+    }
+
+    /**
+     * Set the timelock delay
+     */
+    function setDelay(uint256 _delay) public onlySelf {
         delay = _delay;
     }
 
