@@ -63,7 +63,7 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         ERC20Permit("Voting Brume")
     {}
 
-    /**
+    /*
      * Recompute voting power when a transfer happens
      */
     function _update(address from, address to, uint256 value) internal override  {
@@ -185,6 +185,13 @@ contract Governance is Ownable, ERC20, ERC20Permit {
          * Reset the proposal
          */
         proposal = Proposal(0, 0);
+    }
+
+    /*
+     * Set the timelock delay (can only be called from a proposal)
+     */
+    function setDelay(uint256 _delay) private {
+        delay = _delay;
     }
 
 }
