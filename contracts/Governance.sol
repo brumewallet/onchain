@@ -3,10 +3,10 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/interfaces/IERC6372.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract Governance is Ownable, ERC20, IERC6372 {
+contract Governance is Ownable, ERC20, ERC20Burnable {
 
     /*
      * The original token contract
@@ -190,20 +190,6 @@ contract Governance is Ownable, ERC20, IERC6372 {
      */
     function setDelay(uint256 _delay) private {
         delay = _delay;
-    }
-
-    /*
-     * IERC6372
-     */
-    function clock() public view override returns (uint48) {
-        return uint48(block.timestamp);
-    }
-
-    /*
-     * IERC6372
-     */
-    function CLOCK_MODE() public pure override returns (string memory) {
-        return "mode=timestamp";
     }
 
 }
