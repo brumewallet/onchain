@@ -22,27 +22,27 @@ contract Token is Ownable, ERC20, ERC20Burnable {
 contract Governance is Ownable, ERC20, ERC20Burnable {
 
     /**
-     * @dev The original token contract
+     * @dev The original token contract.
      */
     IERC20 public immutable token;
     
     /**
-     * @dev The timelock delay in seconds (we recommend 2 weeks = 2 * 7 * 24 * 60 * 60)
+     * @dev The timelock delay in seconds.
      */
     uint256 public delay;
 
     /**
-     * @dev Vote by token holder
+     * @dev Vote by token holder.
      */
     mapping(address => address) public voteOf;
 
     /**
-     * @dev Power by candidate
+     * @dev Power by candidate.
      */
     mapping(address => uint256) public powerOf;
 
     /**
-     * @dev A pending proposal
+     * @dev A pending proposal.
      */
     struct Proposal {
         uint256 callshash;
@@ -50,7 +50,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev The pending proposal
+     * @dev The pending proposal.
      */
     Proposal public proposal;
 
@@ -83,7 +83,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Recompute voting power when a transfer happens
+     * @dev Recompute voting power when a transfer happens.
      */
     function _update(address from, address to, uint256 value) internal override  {
         super._update(from, to, value);
@@ -98,7 +98,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /** 
-     * @dev Delegate your voting power to `voted`
+     * @dev Delegate your voting power to `voted`.
      */
     function vote(address voted) public {
         address previousVoted = voteOf[_msgSender()];
@@ -115,7 +115,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Acquire the governance if you have the most voting power
+     * @dev Acquire the governance if you have the most voting power.
      */
     function acquire() public {
         if (owner() != address(0)) {
@@ -128,7 +128,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Increase your voting power by wrapping `amount` of your original tokens
+     * @dev Increase your voting power by wrapping `amount` of your original tokens.
      */
     function wrap(uint256 amount) public {
         token.transferFrom(_msgSender(), address(this), amount);
@@ -136,7 +136,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * Decrease your voting power by unwrapping `amount` of your original tokens
+     * Decrease your voting power by unwrapping `amount` of your original tokens.
      */
     function unwrap(uint256 amount) public {
         _burn(_msgSender(), amount);
@@ -144,7 +144,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Hash a set of transactions
+     * @dev Hash a set of transactions.
      */
     function hashOf(
         address[] memory targets,
@@ -155,7 +155,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Propose a new set of transactions
+     * @dev Propose a new set of transactions.
      */
     function propose(
         address[] memory targets,
@@ -163,13 +163,13 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         bytes[] memory calldatas
     ) public onlyOwner {
         /**
-         * @dev Set the pending proposal and replace the previous one
+         * @dev Set the pending proposal and replace the previous one.
          */
         proposal = Proposal(hashOf(targets, values, calldatas), block.timestamp);
     }
 
     /**
-     * @dev Execute the pending proposal
+     * @dev Execute the pending proposal.
      */
     function execute(
         address[] memory targets,
@@ -179,21 +179,21 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         uint256 callshash = hashOf(targets, values, calldatas);
 
         /**
-         * @dev Check if the proposal is the same
+         * @dev Check if the proposal is the same.
          */
         if (callshash != proposal.callshash) {
             revert GovernanceInvalidExecution(callshash);
         }
 
         /**
-         * @dev Check if the proposal is ready to be executed
+         * @dev Check if the proposal is ready to be executed.
          */
         if (block.timestamp < (proposal.timestamp + delay)) {
             revert GovernancePrematureExecution(block.timestamp);
         }
 
         /**
-         * @dev Execute the proposal
+         * @dev Execute the proposal.
          */
         for (uint256 i = 0; i < targets.length; i++) {
             (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
@@ -201,7 +201,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
         }
 
         /**
-         * @dev Reset the proposal
+         * @dev Reset the proposal.
          */
         proposal = Proposal(0, 0);
     }
@@ -224,7 +224,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     }
 
     /**
-     * @dev Set the timelock delay
+     * @dev Set the timelock delay.
      */
     function setDelay(uint256 _delay) public onlySelf {
         delay = _delay;
