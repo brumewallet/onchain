@@ -29,6 +29,9 @@ contract Governance is Ownable, ERC20, ERC20Permit {
      */
     mapping(address => uint256) public powerOf;
 
+    /*
+     * A pending proposal
+     */
     struct Proposal {
         uint256 callshash;
         uint256 timestamp;
