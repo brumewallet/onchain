@@ -169,7 +169,7 @@ contract Governance is Ownable, ERC20, ERC20Permit {
         /*
          * Check if the proposal is ready to be executed
          */
-        if (block.timestamp < proposal.timestamp + delay) {
+        if (block.timestamp < (proposal.timestamp + delay)) {
             revert GovernancePrematureExecution(block.timestamp);
         }
 
