@@ -72,13 +72,13 @@ contract Governance is Ownable, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
     }
 
     function delegateBySig(
-        address delegatee,
-        uint256 nonce,
-        uint256 expiry,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public virtual override {
+        address,
+        uint256,
+        uint256,
+        uint8,
+        bytes32,
+        bytes32
+    ) public pure override(Votes) {
         revert GovernanceDisabledOperation();
     }
 
