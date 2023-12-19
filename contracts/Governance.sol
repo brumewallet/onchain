@@ -5,19 +5,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-
-contract Token is Ownable, ERC20, ERC20Burnable {
-
-    constructor(address initialOwner)
-        ERC20("Brume", "BRUME")
-        Ownable(initialOwner)
-    {}
-
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
-    }
-    
-}
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Governance is Ownable, ERC20, ERC20Burnable {
 
@@ -131,7 +119,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
      * @dev Increase your voting power by wrapping `amount` of your original tokens.
      */
     function wrap(uint256 amount) public {
-        token.transferFrom(_msgSender(), address(this), amount);
+        SafeERC20.safeTransferFrom(token, _msgSender(), address(this), amount);
         _mint(_msgSender(), amount);
     }
 
@@ -140,7 +128,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
      */
     function unwrap(uint256 amount) public {
         _burn(_msgSender(), amount);
-        token.transfer(_msgSender(), amount);
+        SafeERC20.safeTransfer(token, _msgSender(), amount);
     }
 
     /**
