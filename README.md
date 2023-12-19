@@ -20,5 +20,5 @@ npm i
 ## Development
 
 ```bash
-remixd -s .
+npm run dev
 ```

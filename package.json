@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple governance contract",
   "scripts": {
+    "dev": "remixd -s .",
     "clean": "rm -rf cache out",
     "build": "forge build",
     "test": "forge test",
@@ -10,6 +11,7 @@
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage"
   },
   "devDependencies": {
+    "@remix-project/remixd": "^0.6.20",
     "ds-test": "github:dapphub/ds-test",
     "forge-std": "github:foundry-rs/forge-std",
     "openzeppelin-contracts": "github:OpenZeppelin/openzeppelin-contracts"
