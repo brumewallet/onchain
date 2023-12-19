@@ -6,11 +6,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Governance is Ownable, ReentrancyGuard, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
+contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     
     /**
      * @dev The timelock delay in seconds.
@@ -158,7 +156,7 @@ contract Governance is Ownable, ReentrancyGuard, ERC20, ERC20Burnable, ERC20Wrap
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas
-    ) public onlyOwner nonReentrant {
+    ) public onlyOwner {
         uint256 callshash = hashOf(targets, values, calldatas);
 
         /**
