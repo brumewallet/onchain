@@ -50,7 +50,7 @@ contract GovernanceTest is Test {
     function testBasicWrap() public {
         vm.startPrank(VOTER_1);
         originalToken.approve(address(governance), VOTER_1_INITIAL_AMOUNT);
-        governance.wrap(VOTER_1_INITIAL_AMOUNT);
+        governance.deposit(VOTER_1_INITIAL_AMOUNT);
         vm.stopPrank();
 
         assertEq(originalToken.balanceOf(VOTER_1), 0);
@@ -61,8 +61,8 @@ contract GovernanceTest is Test {
     function testBasicUnwrap() public {
         vm.startPrank(VOTER_1);
         originalToken.approve(address(governance), VOTER_1_INITIAL_AMOUNT);
-        governance.wrap(VOTER_1_INITIAL_AMOUNT);
-        governance.unwrap(VOTER_1_INITIAL_AMOUNT);
+        governance.deposit(VOTER_1_INITIAL_AMOUNT);
+        governance.withdraw(VOTER_1_INITIAL_AMOUNT);
         vm.stopPrank();
 
         assertEq(originalToken.balanceOf(VOTER_1), VOTER_1_INITIAL_AMOUNT);
@@ -89,13 +89,13 @@ contract GovernanceTest is Test {
     function testFlashLoadAcquisition() public {
         vm.startPrank(VOTER_3);
         originalToken.approve(address(governance), VOTER_3_INITIAL_AMOUNT);
-        governance.wrap(VOTER_3_INITIAL_AMOUNT);
+        governance.deposit(VOTER_3_INITIAL_AMOUNT);
         governance.delegate(INITIAL_OWNER);
         vm.stopPrank();
 
         vm.startPrank(VOTER_2);
         originalToken.approve(address(governance), VOTER_2_INITIAL_AMOUNT);
-        governance.wrap(VOTER_2_INITIAL_AMOUNT);
+        governance.deposit(VOTER_2_INITIAL_AMOUNT);
         governance.delegate(INITIAL_OWNER);
         vm.stopPrank();
 
@@ -107,7 +107,7 @@ contract GovernanceTest is Test {
 
         vm.startPrank(VOTER_1);
         originalToken.approve(address(governance), VOTER_1_INITIAL_AMOUNT + FLASH_LOAN_AMOUNT);
-        governance.wrap(VOTER_1_INITIAL_AMOUNT + FLASH_LOAN_AMOUNT);
+        governance.deposit(VOTER_1_INITIAL_AMOUNT + FLASH_LOAN_AMOUNT);
         governance.delegate(VOTER_1);
 
         vm.expectRevert(abi.encodeWithSelector(Governance.GovernanceInsufficientPower.selector, VOTER_1));
