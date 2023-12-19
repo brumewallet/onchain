@@ -176,17 +176,17 @@ contract Governance is Ownable, ReentrancyGuard, ERC20, ERC20Burnable, ERC20Wrap
         }
 
         /**
+         * @dev Reset the proposal.
+         */
+        proposal = Proposal(0, 0);
+
+        /**
          * @dev Execute the proposal.
          */
         for (uint256 i = 0; i < targets.length; i++) {
             (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
             Address.verifyCallResult(success, returndata);
         }
-
-        /**
-         * @dev Reset the proposal.
-         */
-        proposal = Proposal(0, 0);
     }
 
     /**
