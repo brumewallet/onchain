@@ -3,11 +3,12 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract Governance is Ownable, ERC20, ERC20Burnable {
+contract Governance is Ownable, ERC20Votes, ERC20Burnable {
 
     /**
      * @dev The original token contract.
@@ -23,11 +24,6 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
      * @dev Vote by token holder.
      */
     mapping(address => address) public voteOf;
-
-    /**
-     * @dev Power by candidate.
-     */
-    mapping(address => uint256) public powerOf;
 
     /**
      * @dev A pending proposal.
@@ -64,42 +60,15 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
     
     constructor(IERC20 token_, address owner_, uint256 delay_)
         ERC20("Voting Brume", "VBRUME")
+        EIP712("Voting Brume", "v1")
         Ownable(owner_)
     {
         token = token_;
         delay = delay_;
     }
 
-    /**
-     * @dev Recompute voting power when a transfer happens.
-     */
-    function _update(address from, address to, uint256 value) internal override  {
+    function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
         super._update(from, to, value);
-
-        if (from != address(0)) {
-            powerOf[voteOf[from]] -= value;
-        }
-
-        if (to != address(0)) {
-            powerOf[voteOf[to]] += value;
-        }
-    }
-
-    /** 
-     * @dev Delegate your voting power to `voted`.
-     */
-    function vote(address voted) public {
-        address previousVoted = voteOf[_msgSender()];
-
-        if (previousVoted != address(0)) {
-            powerOf[previousVoted] -= balanceOf(_msgSender());
-        }
-
-        voteOf[_msgSender()] = voted;
-
-        if (voted != address(0)) {
-            powerOf[voted] += balanceOf(_msgSender());
-        }
     }
 
     /**
@@ -107,7 +76,7 @@ contract Governance is Ownable, ERC20, ERC20Burnable {
      */
     function acquire() public {
         if (owner() != address(0)) {
-            if (powerOf[_msgSender()] < powerOf[owner()]) {
+            if (getPastVotes(_msgSender(), block.number - 1) < getVotes(owner())) {
               revert GovernanceInsufficientPower(_msgSender());
             }
         }
