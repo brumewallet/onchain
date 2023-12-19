@@ -71,6 +71,17 @@ contract Governance is Ownable, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
         ERC20Votes._update(from, to, value);
     }
 
+    function delegateBySig(
+        address delegatee,
+        uint256 nonce,
+        uint256 expiry,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public virtual override {
+        revert GovernanceDisabledOperation();
+    }
+
     /**
      * @dev Acquire the governance if you have the most voting power.
      */
