@@ -3,27 +3,18 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
 
-contract Governance is Ownable, ERC20Votes, ERC20Burnable {
-
-    /**
-     * @dev The original token contract.
-     */
-    IERC20 public immutable token;
+contract Governance is Ownable, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
     
     /**
      * @dev The timelock delay in seconds.
      */
     uint256 public delay;
-
-    /**
-     * @dev Vote by token holder.
-     */
-    mapping(address => address) public voteOf;
 
     /**
      * @dev A pending proposal.
@@ -57,18 +48,27 @@ contract Governance is Ownable, ERC20Votes, ERC20Burnable {
      * @dev The caller account is not authorized to perform an operation.
      */
     error GovernanceUnauthorizedAccount(address account);
+
+    /**
+     * @dev This operation is disabled for security reasons.
+     */
+    error GovernanceDisabledOperation();
     
     constructor(IERC20 token_, address owner_, uint256 delay_)
+        Ownable(owner_)
+        ERC20Wrapper(token_)
         ERC20("Voting Brume", "VBRUME")
         EIP712("Voting Brume", "v1")
-        Ownable(owner_)
     {
-        token = token_;
         delay = delay_;
     }
  
+    function decimals() public view override(ERC20, ERC20Wrapper) returns (uint8) {
+        return ERC20Wrapper.decimals();
+    }
+
     function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
-        super._update(from, to, value);
+        ERC20Votes._update(from, to, value);
     }
 
     /**
@@ -87,17 +87,15 @@ contract Governance is Ownable, ERC20Votes, ERC20Burnable {
     /**
      * @dev Increase your voting power by wrapping `amount` of your original tokens.
      */
-    function wrap(uint256 amount) public {
-        SafeERC20.safeTransferFrom(token, _msgSender(), address(this), amount);
-        _mint(_msgSender(), amount);
+    function deposit(uint256 amount) public {
+        depositFor(_msgSender(), amount);
     }
 
     /**
      * Decrease your voting power by unwrapping `amount` of your original tokens.
      */
-    function unwrap(uint256 amount) public {
-        _burn(_msgSender(), amount);
-        SafeERC20.safeTransfer(token, _msgSender(), amount);
+    function withdraw(uint256 amount) public {
+        withdrawTo(_msgSender(), amount);
     }
 
     /**
