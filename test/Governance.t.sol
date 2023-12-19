@@ -44,8 +44,6 @@ contract GovernanceTest is Test {
 
     /////////////////////////////
 
-    // WITHDRAWALS
-
     // Basic wrap
     function testBasicWrap() public {
         vm.startPrank(VOTER_1);
@@ -55,6 +53,18 @@ contract GovernanceTest is Test {
 
         assertEq(originalToken.balanceOf(VOTER_1), 0);
         assertEq(governance.balanceOf(VOTER_1), VOTER_1_INITIAL_AMOUNT);
+    }
+
+    // Basic unwrap
+    function testBasicUnwrap() public {
+        vm.startPrank(VOTER_1);
+        originalToken.approve(address(governance), VOTER_1_INITIAL_AMOUNT);
+        governance.wrap(VOTER_1_INITIAL_AMOUNT);
+        governance.unwrap(VOTER_1_INITIAL_AMOUNT);
+        vm.stopPrank();
+
+        assertEq(originalToken.balanceOf(VOTER_1), VOTER_1_INITIAL_AMOUNT);
+        assertEq(governance.balanceOf(VOTER_1), 0);
     }
 
     /////////////////////////////
