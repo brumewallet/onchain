@@ -13,6 +13,10 @@ An implementation of a [Decentralized Headed Autonomous Organization](https://gi
 curl -L https://foundry.paradigm.xyz/ ​| bash
 ```
 
+```bash
+npm i
+```
+
 ## Development
 
 ```bash
