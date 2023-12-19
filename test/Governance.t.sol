@@ -15,6 +15,7 @@ contract GovernanceTest is Test {
     uint256 public constant VOTER_1_INITIAL_AMOUNT = 10000000000000000000;
     uint256 public constant VOTER_2_INITIAL_AMOUNT = 150000000000000000000;
     uint256 public constant VOTER_3_INITIAL_AMOUNT = 450000000000000000000;
+    uint256 public constant FLASH_LOAN_AMOUNT = 1000000000000000000000;
 
     address public constant CREATOR = 0xe8AE3F2bFED29d02FE10D453C7098A73b9a2747C;
     address public constant INITIAL_OWNER = 0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326;
@@ -82,6 +83,35 @@ contract GovernanceTest is Test {
         vm.prank(VOTER_1);
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, VOTER_1));
         governance.propose(proposalTargets1, values1, calldatas1);
+    }
+
+    // Attempted acquisition via flash loan
+    function testFlashLoadAcquisition() public {
+        vm.startPrank(VOTER_3);
+        originalToken.approve(address(governance), VOTER_3_INITIAL_AMOUNT);
+        governance.wrap(VOTER_3_INITIAL_AMOUNT);
+        governance.delegate(INITIAL_OWNER);
+        vm.stopPrank();
+
+        vm.startPrank(VOTER_2);
+        originalToken.approve(address(governance), VOTER_2_INITIAL_AMOUNT);
+        governance.wrap(VOTER_2_INITIAL_AMOUNT);
+        governance.delegate(INITIAL_OWNER);
+        vm.stopPrank();
+
+        // Flash loan attack
+        vm.roll(1234);
+
+        vm.prank(CREATOR);
+        originalToken.mint(VOTER_1, FLASH_LOAN_AMOUNT);
+
+        vm.startPrank(VOTER_1);
+        originalToken.approve(address(governance), VOTER_1_INITIAL_AMOUNT + FLASH_LOAN_AMOUNT);
+        governance.wrap(VOTER_1_INITIAL_AMOUNT + FLASH_LOAN_AMOUNT);
+        governance.delegate(VOTER_1);
+
+        vm.expectRevert(abi.encodeWithSelector(Governance.GovernanceInsufficientPower.selector, VOTER_1));
+        governance.acquire();
     }
 
     /////////////////////////////
