@@ -63,14 +63,23 @@ contract Governance is Ownable, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
         delay = delay_;
     }
  
+    /**
+     * @dev Use ERC20Wrapper decimals.
+     */
     function decimals() public view override(ERC20, ERC20Wrapper) returns (uint8) {
         return ERC20Wrapper.decimals();
     }
 
+    /**
+     * @dev Use ERC20Votes to update the voting power.
+     */
     function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
         ERC20Votes._update(from, to, value);
     }
 
+    /**
+     * @dev Disable delegate-by-signature to avoid phishing and replay attacks.
+     */
     function delegateBySig(
         address,
         uint256,
@@ -79,6 +88,13 @@ contract Governance is Ownable, ERC20, ERC20Burnable, ERC20Wrapper, ERC20Votes {
         bytes32,
         bytes32
     ) public pure override(Votes) {
+        revert GovernanceDisabledOperation();
+    }
+
+    /**
+     * @dev Disable ownership transfers to avoid weird things from happening.
+     */
+    function transferOwnership(address) public pure override(Ownable) {
         revert GovernanceDisabledOperation();
     }
 
