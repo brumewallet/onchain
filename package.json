@@ -14,6 +14,7 @@
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage"
   },
   "devDependencies": {
+    "ds-test": "github:dapphub/ds-test",
     "forge-std": "github:foundry-rs/forge-std",
     "openzeppelin-contracts": "github:OpenZeppelin/openzeppelin-contracts",
     "prettier": "^3.1.1",
