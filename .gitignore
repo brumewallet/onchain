@@ -1,5 +1,8 @@
-.deps
-artifacts
+node_modules/
+lib/
+
+.deps/
+artifacts/
 
 # Compiler files
 cache/

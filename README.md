@@ -7,6 +7,12 @@ An implementation of a [Decentralized Headed Autonomous Organization](https://gi
 - Not yet audited
 - Not yet deployed
 
+## Getting started
+
+```bash
+curl -L https://foundry.paradigm.xyz/ ​| bash
+```
+
 ## Development
 
 ```bash

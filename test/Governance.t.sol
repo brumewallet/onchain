@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 import "@forge-std/Test.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../contracts/Governance.sol";
-import "../contracts/Token.sol";
+import "../src/Governance.sol";
+import "../src/Token.sol";
 
 contract GovernanceTest is Test {
     Governance public governance;

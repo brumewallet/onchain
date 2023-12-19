@@ -63,10 +63,10 @@ contract Governance is Ownable, ERC20Votes, ERC20Burnable {
         EIP712("Voting Brume", "v1")
         Ownable(owner_)
     {
-        token = token_;
+      token = token_;
         delay = delay_;
     }
-
+ 
     function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
         super._update(from, to, value);
     }
