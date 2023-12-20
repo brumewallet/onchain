@@ -1,8 +1,14 @@
-# Governance
+# Onchain
+
+## Token
+
+An implementation of an [Allocation Token]()
+
+## Governance
 
 An implementation of a [Decentralized Headed Autonomous Organization](https://github.com/brumewallet/rfcs/blob/main/onchain/GOVERNANCE.md)
 
-## State
+### State
 - Not yet finished
 - Not yet audited
 - Not yet deployed
