@@ -1,6 +1,6 @@
 # Allocation Token
 
-A deflationary token that allows for debt-based allocation and arbitrage, in order to maximize market efficiency and minimize attack surface.
+A dynamic-supply token that allows for debt-based allocation and arbitrage, in order to maximize market efficiency and minimize attack surface.
 
 ## TLDR
 
