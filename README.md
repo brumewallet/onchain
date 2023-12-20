@@ -1,4 +1,4 @@
-# on-chain
+# onchain
 
 Contracts and specifications for on-chain stuff
 
