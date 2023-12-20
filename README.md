@@ -1,4 +1,6 @@
-# Onchain
+# on-chain
+
+Contracts and specifications for on-chain stuff
 
 ## Token
 
