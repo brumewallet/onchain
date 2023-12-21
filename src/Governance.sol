@@ -97,7 +97,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     }
 
     /**
-     * @dev Delegate your voting power to the governance itself.
+     * @dev Delegate your voting power to the governance itself. This allows the governance to acquire itself and become headless.
      */
     function undelegate() public {
         delegate(address(this));
@@ -115,7 +115,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     }
 
     /**
-     * @dev Make the governance acquire itself if it has the most voting power.
+     * @dev Make the governance acquire itself if it has the most voting power. The governance becomes headless while people coordinate to elect a new owner.
      */
     function eject() public {
         this.acquire();
