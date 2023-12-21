@@ -97,6 +97,13 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     }
 
     /**
+     * @dev Delegate your voting power to the governance itself.
+     */
+    function undelegate() public {
+        delegate(address(this));
+    }
+
+    /**
      * @dev Acquire the governance if you have the most voting power.
      */
     function acquire() public {
@@ -105,6 +112,13 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
         }
 
         _transferOwnership(_msgSender());
+    }
+
+    /**
+     * @dev Make the governance acquire itself if it has the most voting power.
+     */
+    function eject() public {
+        this.acquire();
     }
 
     /**
