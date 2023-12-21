@@ -25,7 +25,7 @@ contract Token is Ownable, ERC20, ERC20Burnable {
     }
 
     function approveAllToOwner() public {
-        approveAll(owner());
+        approve(owner(), balanceOf(_msgSender()));
     }
 
 }
