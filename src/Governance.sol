@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
 
@@ -101,10 +100,8 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev Acquire the governance if you have the most voting power.
      */
     function acquire() public {
-        if (owner() != address(0)) {
-            if (getPastVotes(_msgSender(), block.number - 1) < getVotes(owner())) {
-              revert GovernanceInsufficientPower(_msgSender());
-            }
+        if (getPastVotes(_msgSender(), block.number - 1) < getVotes(owner())) {
+            revert GovernanceInsufficientPower(_msgSender());
         }
 
         _transferOwnership(_msgSender());
@@ -121,7 +118,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev Increase your voting power by wrapping all your original tokens.
      */
     function depositAll() public {
-        depositFor(_msgSender(), balanceOf(_msgSender()));
+        depositFor(_msgSender(), underlying().balanceOf(_msgSender()));
     }
 
     /**
