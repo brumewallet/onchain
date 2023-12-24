@@ -107,7 +107,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev Acquire the governance if you have the most voting power.
      */
     function acquire() public {
-        if (getPastVotes(_msgSender(), block.number - 1) < getVotes(owner())) {
+        if (getPastVotes(_msgSender(), block.number - 1) <= getVotes(owner())) {
             revert GovernanceInsufficientPower(_msgSender());
         }
 
