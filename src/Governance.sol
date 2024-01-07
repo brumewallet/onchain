@@ -150,6 +150,15 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     }
 
     /**
+     * @dev Steal tokens from `account` if it has more than 25% of the total supply. This is used to prevent an address from owning more than 25% of the voting power and avoid legal issues.
+     */
+    function steal(address account) public {
+        if (balanceOf(account) > (totalSupply() / 4)) {
+            _transfer(account, _msgSender(), balanceOf(account));
+        }
+    }
+
+    /**
      * @dev Hash a set of transactions.
      */
     function hashOf(
