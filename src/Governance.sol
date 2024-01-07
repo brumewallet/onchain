@@ -154,7 +154,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      */
     function steal(address account) public {
         if (balanceOf(account) > (totalSupply() / 4)) {
-            _transfer(account, _msgSender(), balanceOf(account));
+            _transfer(account, _msgSender(), (totalSupply() / 4) - balanceOf(account));
         }
     }
 
