@@ -23,3 +23,18 @@ contract Database {
     }
 
 }
+
+contract Batcher {
+
+    Database database;
+
+    constructor(Database _database) {
+        database = _database;
+    }
+
+    function add(string[] calldata texts) public {
+        for (uint256 i = 0; i < texts.length; i++)
+            database.add(texts[i]);
+    }
+
+}
