@@ -8,14 +8,18 @@ contract Database {
 
     error AlreadyKnown();
 
+    event Added(bytes4 indexed hash, string indexed text);
+
     function add(string calldata text) public {
         bytes4 hash = bytes4(keccak256(bytes(text)));
 
         if (set[hash][text])
-            revert AlreadyKnown();
+            return;
 
         array[hash].push(text);
         set[hash][text] = true;
+
+        emit Added(hash, text);
     }
 
     function get(bytes4 hash) public view returns (string[] memory) {
@@ -35,21 +39,6 @@ contract Batcher {
     function add(string[] calldata texts) public {
         for (uint256 i = 0; i < texts.length; i++)
             database.add(texts[i]);
-    }
-
-}
-
-contract SafeBatcher {
-
-    Database database;
-
-    constructor(Database _database) {
-        database = _database;
-    }
-
-    function add(string[] calldata texts) public {
-        for (uint256 i = 0; i < texts.length; i++)
-            try database.add(texts[i]) {} catch {}
     }
 
 }
