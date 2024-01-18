@@ -38,3 +38,18 @@ contract Batcher {
     }
 
 }
+
+contract SafeBatcher {
+
+    Database database;
+
+    constructor(Database _database) {
+        database = _database;
+    }
+
+    function add(string[] calldata texts) public {
+        for (uint256 i = 0; i < texts.length; i++)
+            try database.add(texts[i]) {} catch {}
+    }
+
+}
