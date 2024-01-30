@@ -7,12 +7,12 @@ A dynamic-supply token that allows for debt-based allocation and arbitrage, in o
 The token is an ERC20 but with an owner (DAO, timelocked DHAO, or timelocked multisig).
 
 The owner is able to:
-- Get debt by minting tokens (timelocked)
+- Get debt by minting tokens
 - Pay debt by burning tokens
 
 In other words:
-- Borrowing "money" from the token holders by increasing the supply (a.k.a investment)
-- Giving "money" back to the token holders by reducing the supply (a.k.a dividends)
+- Borrowing "money" from the token holders by increasing the supply
+- Refund "money" back to the token holders by reducing the supply
 
 The owner can propose to mint some amount of tokens, which can be only be executed after some delay in order to let the token market vote.
 
@@ -92,9 +92,7 @@ Allocated liquidity is wherever the owner sent it to (e.g. the owner stakes it o
 
 ### What prevents the owner from rugpulling?
 
-If the owner attempts to allocate more than necessary for its functions, the market has a safe delay to disagree and sell the token, or replace the head if the owner is a DHAO.
-
-If the owner has already allocated liquidity, let's say 0.1% of the supply, he can only rugpull that 0.1%.
+The owner would be a DAO or DHAO, so the security of the tokens depends on the security of such governance mechanisms.
 
 ### Is the token inflationary or deflationary?
 
@@ -106,7 +104,7 @@ When the project becomes cost-effective, the burn/mint ratio will increase and t
 
 ### Is the token a security?
 
-Probably yes if the owner is a single person or company, probably no if the owner is a DAO/DHAO.
+See a lawyer.
 
 ### When are tokens burnt?
 
