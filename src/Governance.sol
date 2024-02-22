@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import {ERC20Wrapper} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
+import {Votes} from "@openzeppelin/contracts/governance/utils/Votes.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
-    
+contract Governance is Ownable, ERC20, ERC20Votes, ERC20Wrapper {
     /**
      * @dev The timelock delay in seconds.
      */
@@ -36,7 +38,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev You attempted to execute an invalid proposal.
      */
     error GovernanceInvalidExecution(uint256 callshash);
-    
+
     /**
      * @dev You attempted to execute a proposal too early.
      */
@@ -51,7 +53,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev This operation is disabled for security reasons.
      */
     error GovernanceDisabledOperation();
-    
+
     constructor(IERC20 token_, address owner_, uint256 delay_)
         Ownable(owner_)
         ERC20Wrapper(token_)
@@ -60,7 +62,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     {
         delay = delay_;
     }
- 
+
     /**
      * @dev Use ERC20Wrapper decimals.
      */
@@ -78,14 +80,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     /**
      * @dev Disable delegate-by-signature to avoid phishing and replay attacks.
      */
-    function delegateBySig(
-        address,
-        uint256,
-        uint256,
-        uint8,
-        bytes32,
-        bytes32
-    ) public pure override(Votes) {
+    function delegateBySig(address, uint256, uint256, uint8, bytes32, bytes32) public pure override(Votes) {
         revert GovernanceDisabledOperation();
     }
 
@@ -161,22 +156,18 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     /**
      * @dev Hash a set of transactions.
      */
-    function hashOf(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas
-    ) public pure returns (uint256) {
+    function hashOf(address[] memory targets, uint256[] memory values, bytes[] memory calldatas)
+        public
+        pure
+        returns (uint256)
+    {
         return uint256(keccak256(abi.encode(targets, values, calldatas)));
     }
 
     /**
      * @dev Propose a new set of transactions.
      */
-    function propose(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas
-    ) public onlyOwner {
+    function propose(address[] memory targets, uint256[] memory values, bytes[] memory calldatas) public onlyOwner {
         /**
          * @dev Set the pending proposal and replace the previous one.
          */
@@ -186,11 +177,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     /**
      * @dev Execute the pending proposal.
      */
-    function execute(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas
-    ) public onlyOwner {
+    function execute(address[] memory targets, uint256[] memory values, bytes[] memory calldatas) public onlyOwner {
         uint256 callshash = hashOf(targets, values, calldatas);
 
         /**
@@ -224,7 +211,7 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     /**
      * @dev Throws if called by any account other than this contract.
      */
-     modifier onlySelf() {
+    modifier onlySelf() {
         _checkSelf();
         _;
     }
@@ -244,5 +231,4 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     function setDelay(uint256 _delay) public onlySelf {
         delay = _delay;
     }
-
 }
