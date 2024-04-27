@@ -58,8 +58,8 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      */
     error GovernanceDisabledOperation();
     
-    constructor(address owner_, uint256 delay_)
-        Ownable(owner_)
+    constructor(uint256 delay_)
+        Ownable(address(this))
         ERC20Wrapper(token)
         ERC20("Voting Brume", "VBRUME")
         EIP712("Voting Brume", "v1")
