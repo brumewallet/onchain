@@ -9,9 +9,12 @@ import { ERC20Wrapper } from "@openzeppelin/contracts/token/ERC20/extensions/ERC
 import { Votes } from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { Token } from "./token.sol";
 
 contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     
+    Token token = Token(address(0x0));
+
     /**
      * @dev The timelock delay in seconds.
      */
@@ -55,9 +58,9 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      */
     error GovernanceDisabledOperation();
     
-    constructor(IERC20 token_, address owner_, uint256 delay_)
+    constructor(address owner_, uint256 delay_)
         Ownable(owner_)
-        ERC20Wrapper(token_)
+        ERC20Wrapper(token)
         ERC20("Voting Brume", "VBRUME")
         EIP712("Voting Brume", "v1")
     {

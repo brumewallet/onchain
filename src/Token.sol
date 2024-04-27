@@ -7,9 +7,9 @@ import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ER
 
 contract Token is Ownable, ERC20, ERC20Burnable {
 
-    constructor(address initialOwner)
+    constructor()
         ERC20("Brume", "BRUME")
-        Ownable(initialOwner)
+        Ownable(_msgSender())
     {}
 
     function mint(address to, uint256 amount) public onlyOwner {
