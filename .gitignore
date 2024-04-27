@@ -6,3 +6,5 @@ artifacts/
 # Compiler files
 cache/
 out/
+
+.DS_Store

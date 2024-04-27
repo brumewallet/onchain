@@ -13,7 +13,7 @@ import { Token } from "./token.sol";
 
 contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
     
-    Token token = Token(address(0x0));
+    Token public token = Token(address(0x0));
 
     /**
      * @dev The timelock delay in seconds.

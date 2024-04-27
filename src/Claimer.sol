@@ -9,12 +9,12 @@ contract Claimer is Ownable {
     /**
      * Token
      */
-    Token token = Token(address(0x0));
+    Token public token = Token(address(0x0));
 
     /**
      * Balances
      */
-    mapping(address => uint256) balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     /**
      * Create a claimer with a predefined set of targets and values
