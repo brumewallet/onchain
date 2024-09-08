@@ -71,14 +71,14 @@ contract Governance is Ownable, ERC20, ERC20Wrapper, ERC20Votes {
      * @dev Use ERC20Wrapper decimals.
      */
     function decimals() public view override(ERC20, ERC20Wrapper) returns (uint8) {
-        return ERC20Wrapper.decimals();
+        return super.decimals();
     }
 
     /**
      * @dev Use ERC20Votes to update the voting power.
      */
     function _update(address from, address to, uint256 value) internal override(ERC20, ERC20Votes) {
-        ERC20Votes._update(from, to, value);
+        super._update(from, to, value);
     }
 
     /**
