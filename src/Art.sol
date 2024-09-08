@@ -30,12 +30,12 @@ contract Art is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable, ERC721Royal
         return super.tokenURI(tokenId);
     }
 
-    function setTokenURI(uint256 tokenId, string memory _tokenURI) public onlyOwner {
-        _setTokenURI(tokenId, _tokenURI);
-    }
-
     function setDefaultRoyalty(uint96 _royalty) public onlyOwner {
         _setDefaultRoyalty(owner(), _royalty);
+    }
+
+    function setTokenURI(uint256 tokenId, string memory _tokenURI) public onlyOwner {
+        _setTokenURI(tokenId, _tokenURI);
     }
 
 }
