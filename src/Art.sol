@@ -46,12 +46,37 @@ contract Art is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable, ERC721Royal
         _resetTokenRoyalty(tokenId);
     }
 
-    function setTokenURI(uint256 tokenId, string memory _tokenURI) public onlyOwner {
+    function setTokenURI(uint256 tokenId, string calldata _tokenURI) public onlyOwner {
         _setTokenURI(tokenId, _tokenURI);
     }
 
     function mint(address to, uint256 tokenId) public onlyOwner {
         _mint(to, tokenId);
+    }
+
+}
+
+contract Batcher is Ownable {
+    
+    Art art;
+
+    constructor(
+        Art _art
+    )
+        Ownable(_msgSender())
+    {
+        art = _art;
+    }
+
+    function batch(uint256[] calldata ids, address[] calldata tos, string[] calldata uris) public onlyOwner {
+        for (uint8 i = 0; i < ids.length; i++){
+            art.mint(tos[i], ids[i]);
+            art.setTokenURI(ids[i], uris[i]);
+        }
+    }
+
+    function dispose() public onlyOwner {
+        art.transferOwnership(owner());
     }
 
 }
