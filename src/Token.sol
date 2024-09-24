@@ -11,7 +11,7 @@ contract Token is Ownable, ERC20, ERC20Burnable {
         string memory name_,
         string memory symbol_
     )
-        ERC20(name, symbol)
+        ERC20(name_, symbol_)
         Ownable(_msgSender())
     {}
 
