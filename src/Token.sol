@@ -7,8 +7,11 @@ import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ER
 
 contract Token is Ownable, ERC20, ERC20Burnable {
 
-    constructor()
-        ERC20("Brume", "BRUME")
+    constructor(
+        string memory name_,
+        string memory symbol_
+    )
+        ERC20(name, symbol)
         Ownable(_msgSender())
     {}
 
@@ -26,6 +29,30 @@ contract Token is Ownable, ERC20, ERC20Burnable {
 
     function approveAllToOwner() public {
         approve(owner(), balanceOf(_msgSender()));
+    }
+
+}
+
+contract Batcher is Ownable {
+
+    Token token;
+
+    constructor(
+        Token token_
+    )
+        Ownable(_msgSender())
+    {
+        token = token_;
+    }
+
+    function batch(address[] calldata tos, uint256[] calldata amounts) public onlyOwner {
+        for (uint8 i = 0; i < tos.length; i++) {
+            token.mint(tos[i], amounts[i]);
+        }
+    }
+
+    function dispose() public onlyOwner {
+        token.transferOwnership(owner());
     }
 
 }

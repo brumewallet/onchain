@@ -61,11 +61,11 @@ contract Batcher is Ownable {
     Art art;
 
     constructor(
-        Art _art
+        Art art_
     )
         Ownable(_msgSender())
     {
-        art = _art;
+        art = art_;
     }
 
     function batch(uint256[] calldata ids, address[] calldata tos, string[] calldata uris) public onlyOwner {
