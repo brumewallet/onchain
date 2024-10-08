@@ -33,7 +33,7 @@ contract Token is Ownable, ERC20, ERC20Burnable {
 
 }
 
-contract Batcher is Ownable {
+contract Multisender is Ownable {
 
     Token token;
 
@@ -45,14 +45,14 @@ contract Batcher is Ownable {
         token = token_;
     }
 
-    function batch(address[] calldata tos, uint256[] calldata amounts) public onlyOwner {
-        for (uint8 i = 0; i < tos.length; i++) {
-            token.mint(tos[i], amounts[i]);
-        }
+    function dispose() public onlyOwner {
+        token.transfer(owner(), token.balanceOf(address(this)));
     }
 
-    function dispose() public onlyOwner {
-        token.transferOwnership(owner());
+    function send(address[] calldata tos, uint256[] calldata amounts) public onlyOwner {
+        for (uint8 i = 0; i < tos.length; i++) {
+            token.transfer(tos[i], amounts[i]);
+        }
     }
 
 }
