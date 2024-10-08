@@ -13,7 +13,7 @@ contract Timelocker is Ownable {
     /**
      * @dev Absolute timestamp of end-of-lock time
      */
-    uint256 public timestamp = 0;
+    uint256 public timestamp = block.timestamp;
 
     /**
      * @dev You attempted to use something while the contract is locked
