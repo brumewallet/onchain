@@ -56,3 +56,27 @@ contract Multisender is Ownable {
     }
 
 }
+
+contract Multiminter is Ownable {
+
+    Token token;
+
+    constructor(
+        Token token_
+    )
+        Ownable(_msgSender())
+    {
+        token = token_;
+    }
+
+    function dispose() public onlyOwner {
+        token.transferOwnership(owner());
+    }
+
+    function batch(address[] calldata tos, uint256[] calldata amounts) public onlyOwner {
+        for (uint8 i = 0; i < tos.length; i++) {
+            token.mint(tos[i], amounts[i]);
+        }
+    }
+
+}
