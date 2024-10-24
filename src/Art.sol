@@ -56,9 +56,9 @@ contract Art is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable, ERC721Royal
 
 }
 
-contract Batcher is Ownable {
+contract Multiminter is Ownable {
     
-    Art art;
+    Art public art;
 
     constructor(
         Art art_
@@ -68,15 +68,15 @@ contract Batcher is Ownable {
         art = art_;
     }
 
+    function dispose() public onlyOwner {
+        art.transferOwnership(owner());
+    }
+
     function batch(uint256[] calldata ids, address[] calldata tos, string[] calldata uris) public onlyOwner {
         for (uint8 i = 0; i < ids.length; i++){
             art.mint(tos[i], ids[i]);
             art.setTokenURI(ids[i], uris[i]);
         }
-    }
-
-    function dispose() public onlyOwner {
-        art.transferOwnership(owner());
     }
 
 }
