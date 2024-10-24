@@ -101,8 +101,8 @@ contract Inflator is Ownable {
         target = target_;
     }
 
-    function dispose() public onlyOwner {
-        token.transferOwnership(owner());
+    function dispose(address to) public onlyOwner {
+        token.transferOwnership(to);
     }
 
     function brrr() public /* EVERYONE! */ {
