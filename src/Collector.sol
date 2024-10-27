@@ -163,7 +163,7 @@ interface INonfungiblePositionManager is IERC721Enumerable
     function burn(uint256 tokenId) external payable;
 }
 
-contract Collector is Ownable {
+contract OldCollector is Ownable {
 
     /**
      * @dev Uniswap-like v3 position manager

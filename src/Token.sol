@@ -33,7 +33,7 @@ contract Token is Ownable, ERC20, ERC20Burnable {
 
 }
 
-contract Multisender is Ownable {
+contract OldMultisender is Ownable {
 
     Token public token;
 
@@ -57,7 +57,7 @@ contract Multisender is Ownable {
 
 }
 
-contract Multiminter is Ownable {
+contract OldMultiminter is Ownable {
 
     Token public token;
 

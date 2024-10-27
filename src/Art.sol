@@ -56,7 +56,7 @@ contract Art is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable, ERC721Royal
 
 }
 
-contract Multiminter is Ownable {
+contract OldMultiminter is Ownable {
     
     Art public art;
 
