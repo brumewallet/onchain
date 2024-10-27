@@ -3,23 +3,26 @@ pragma solidity ^0.8.20;
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-abstract contract OldDisposable {
+abstract contract UnDisposable {
     function dispose() external virtual;
 }
 
-abstract contract NewDisposable {
+abstract contract ToDisposable {
     function dispose(address to) external virtual;
 }
 
+/**
+ * Allow disposal to a call-time address
+ */
 contract Acquirer is Ownable {
 
-    OldDisposable public disposable;
+    UnDisposable public disposable;
 
     Ownable public ownable;
 
     constructor(
-        Ownable ownable_,
-        OldDisposable disposable_
+        UnDisposable disposable_,
+        Ownable ownable_
     )
         Ownable(_msgSender())
     {
@@ -27,10 +30,41 @@ contract Acquirer is Ownable {
         ownable = ownable_;
     }
 
-    function acquire() public /* EVERYONE! */ {
+    function dispose(address to) public onlyOwner {
+        /**
+         * Acquire ownership
+         */
         disposable.dispose();
 
-        ownable.transferOwnership(owner());
+        /**
+         * Transfer ownership
+         */
+        ownable.transferOwnership(to);
+    }
+
+}
+
+/**
+ * Restrict disposal to a compile-time address
+ */
+contract Restricter is Ownable {
+
+    ToDisposable public disposable;
+
+    address public to;
+
+    constructor(
+        ToDisposable disposable_,
+        address to_
+    )
+        Ownable(_msgSender())
+    {
+        disposable = disposable_;
+        to = to_;
+    }
+
+    function dispose() public onlyOwner {
+        disposable.dispose(to);
     }
 
 }
