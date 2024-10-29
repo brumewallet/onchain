@@ -81,20 +81,20 @@ contract Owner {
         }
     }
 
-    function proxy() internal {
-        if (msg.sender == owner()) {
-            call();
-        } else {
-            staticcall();
-        }
-    }
-
     receive() external payable {
         payable(owner()).transfer(msg.value);
     }
 
     fallback() external payable {
-        proxy();
+        if (msg.sender == owner()) {
+            call();
+        } 
+
+        if (msg.value > 0) {
+            revert();
+        }
+
+        staticcall();
     }
 
 }
