@@ -21,15 +21,15 @@ contract Owner {
         return;
     }
 
-    modifier ifAdmin() {
+    modifier onlyOwner() {
         if (msg.sender == collection.ownerOf(uint256(uint160(address(this))))) {
             _;
         } else {
-            staticcall();
+            revert();
         }
     }
 
-    function setImplementation(address implementation_) public ifAdmin {
+    function setImplementation(address implementation_) public onlyOwner {
         implementation = implementation_;
     }
 
