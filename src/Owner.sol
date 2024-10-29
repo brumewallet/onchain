@@ -4,18 +4,20 @@ pragma solidity ^0.8.20;
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Owned } from "./owned.sol";
 
-Owned constant owned = Owned(address(0xeC35c0380aA6a444171663Ccac4fa5a1A83F4549));
-
 contract Owner {
+
+    Owned public database;
 
     address public implementation;
 
     constructor(
+        Owned database_,
         address implementation_
     ) {
+        database = database_;
         implementation = implementation_;
 
-        owned.mint(msg.sender);
+        database.mint(msg.sender);
  
         return;
     }
@@ -67,7 +69,7 @@ contract Owner {
             return;
         }
 
-        if (msg.sender == owned.ownerOf(uint256(uint160(address(this))))) {
+        if (msg.sender == database.ownerOf(uint256(uint160(address(this))))) {
             return call();
         }
 
@@ -79,7 +81,7 @@ contract Owner {
             return;
         }
 
-        if (msg.sender == owned.ownerOf(uint256(uint160(address(this))))) {
+        if (msg.sender == database.ownerOf(uint256(uint160(address(this))))) {
             return call();
         }
 
