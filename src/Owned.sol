@@ -7,53 +7,85 @@ import { ERC721URIStorage } from "@openzeppelin/contracts/token/ERC721/extension
 import { ERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 Owned constant owned = Owned(address(0xd6cCd11a09e616e9F3C24c13F53d62BB1337af3F));
-Dummy constant dummy = Dummy(address(0x52d49596757350c0f4423Beaf4420363Fb502E2E));
-
-contract Dummy {
-
-    fallback() external { }
-
-}
 
 contract Owner {
 
-    Ownable public ownable;
+    address public implementation;
 
     constructor(
-        Ownable ownable_
+        address implementation_
     ) {
-        ownable = ownable_;
+        implementation = implementation_;
 
         owned.mint(msg.sender);
+
+        return;
     }
 
-    function implementation() external view returns (address) {
-        return address(ownable);
-    }
-
-    fallback() external payable {
-        require(msg.sender == owned.ownerOf(uint256(uint160(address(this)))));
-
-        address(dummy).delegatecall("");
-
-        assembly {
-            // Copy msg.data. We take full control of memory in this inline assembly
-            // block because it will not return to Solidity code. We overwrite the
-            // Solidity scratch pad at memory position 0.
+    function dontcallme() external {
+       assembly {
             calldatacopy(0, 0, calldatasize())
 
-            // Call the implementation.
-            // out and outsize are 0 because we don't know the size yet.
-            let result := call(gas(), sload(ownable.slot), callvalue(), 0, calldatasize(), 0, 0)
+            let result := delegatecall(gas(), address(), 0, calldatasize(), 0, 0)
 
-            // Copy the returned data.
             returndatacopy(0, 0, returndatasize())
 
             switch result
-            // delegatecall returns 0 on error.
             case 0 { revert(0, returndatasize()) }
             default { return(0, returndatasize()) }
         }
+    }
+
+    function call() internal {
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+
+            let result := call(gas(), sload(implementation.slot), callvalue(), 0, calldatasize(), 0, 0)
+
+            returndatacopy(0, 0, returndatasize())
+
+            switch result
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
+        }
+    }
+
+    function staticcall() internal view {
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+
+            let result := staticcall(gas(), sload(implementation.slot), 0, calldatasize(), 0, 0)
+
+            returndatacopy(0, 0, returndatasize())
+
+            switch result
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
+        }
+    }
+
+    receive() external payable { 
+        if (msg.sender == address(this)) {
+            return;
+        }
+
+        if (msg.sender == owned.ownerOf(uint256(uint160(address(this))))) {
+            return call();
+        }
+
+        return staticcall();
+    }
+
+    fallback() external payable {
+        if (msg.sender == address(this)) {
+            return;
+        }
+
+        if (msg.sender == owned.ownerOf(uint256(uint160(address(this))))) {
+            return call();
+        }
+
+        return staticcall();
     }
 
 }
