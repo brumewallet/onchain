@@ -7,7 +7,7 @@ import { ERC721URIStorage } from "@openzeppelin/contracts/token/ERC721/extension
 import { ERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import { Base64 } from "@openzeppelin/contracts/utils/Base64.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { Math } from "@openzeppelin/contracts/utils/math//Math.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 library MyBytes {
 

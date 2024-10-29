@@ -6,20 +6,32 @@ import { Owned } from "./owned.sol";
 
 contract Owner {
 
-    Owned public database;
+    Owned public collection;
 
     address public implementation;
 
     constructor(
-        Owned database_,
+        Owned collection_,
         address implementation_
     ) {
-        database = database_;
+        collection = collection_;
         implementation = implementation_;
 
-        database.mint(msg.sender);
+        collection.mint(msg.sender);
  
         return;
+    }
+
+    modifier ifAdmin() {
+        if (msg.sender == collection.ownerOf(uint256(uint160(address(this))))) {
+            _;
+        } else {
+            staticcall();
+        }
+    }
+
+    function setImplementation(address implementation_) public ifAdmin {
+        implementation = implementation_;
     }
 
     function dontcallme() external {
@@ -64,28 +76,20 @@ contract Owner {
         }
     }
 
-    receive() external payable { 
-        if (msg.sender == address(this)) {
-            return;
+    function proxy() internal {
+        if (msg.sender == collection.ownerOf(uint256(uint160(address(this))))) {
+            call();
+        } else {
+            staticcall();
         }
+    }
 
-        if (msg.sender == database.ownerOf(uint256(uint160(address(this))))) {
-            return call();
-        }
-
-        return staticcall();
+    receive() external payable {
+        // NOOP
     }
 
     fallback() external payable {
-        if (msg.sender == address(this)) {
-            return;
-        }
-
-        if (msg.sender == database.ownerOf(uint256(uint160(address(this))))) {
-            return call();
-        }
-
-        return staticcall();
+        proxy();
     }
 
 }
