@@ -84,7 +84,7 @@ contract Owner {
     }
 
     receive() external payable {
-        // NOOP
+        payable(collection.ownerOf(uint256(uint160(address(this))))).transfer(msg.value);
     }
 
     fallback() external payable {
