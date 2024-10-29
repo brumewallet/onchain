@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Owned } from "./owned.sol";
 
-Owned constant owned = Owned(address(0xd6cCd11a09e616e9F3C24c13F53d62BB1337af3F));
+Owned constant owned = Owned(address(0xeC35c0380aA6a444171663Ccac4fa5a1A83F4549));
 
 contract Owner {
 
@@ -16,7 +16,7 @@ contract Owner {
         implementation = implementation_;
 
         owned.mint(msg.sender);
-
+ 
         return;
     }
 

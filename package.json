@@ -11,8 +11,8 @@
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^5.0.1",
-    "@remix-project/remixd": "^0.6.20",
+    "@openzeppelin/contracts": "^5.1.0",
+    "@remix-project/remixd": "^0.6.39",
     "ds-test": "github:dapphub/ds-test",
     "forge-std": "github:foundry-rs/forge-std"
   }
