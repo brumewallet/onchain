@@ -87,14 +87,14 @@ contract Owner {
 
     fallback() external payable {
         if (msg.sender == owner()) {
-            call();
+            return call();
         } 
 
         if (msg.value > 0) {
             revert();
         }
 
-        staticcall();
+        return staticcall();
     }
 
 }
