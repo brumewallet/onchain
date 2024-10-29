@@ -2,28 +2,6 @@
 
 Contracts and specifications for on-chain stuff
 
-## Token
-
-An implementation of an [Allocation Token](https://github.com/brumewallet/onchain/blob/main/rfc/TOKEN.md)
-
-### State
-- Not yet deployed
-
-## Governance
-
-An implementation of a [Decentralized Headed Autonomous Organization](https://github.com/brumewallet/onchain/blob/main/rfc/GOVERNANCE.md)
-
-### State
-- Not yet audited
-- Not yet deployed
-
-## Database
-
-A function hash to function signatures database
-
-### State
-- Not yet deployed
-
 ## Getting started
 
 ```bash
