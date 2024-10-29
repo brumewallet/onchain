@@ -11,13 +11,13 @@ import { Math } from "@openzeppelin/contracts/utils/math//Math.sol";
 
 library MyBytes {
 
-    function slice(bytes memory buffer, uint256 start, uint256 end) internal pure returns (bytes memory) {
+    function slice(bytes memory data, uint256 start, uint256 end) public pure returns (bytes memory) {
         bytes memory result = new bytes(end - start);
-
-        assembly ("memory-safe") {
-            mcopy(add(result, 0x20), add(buffer, add(start, 0x20)), sub(end, start))
+        
+        for (uint256 i = start; i < end; i++) {
+            result[i - start] = data[i];
         }
-
+        
         return result;
     }
 

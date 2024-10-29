@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "remixd -s .",
     "clean": "rm -rf cache out",
-    "build": "forge build",
-    "test": "forge test",
+    "build": "forge build --via-ir",
+    "test": "forge test --via-ir",
     "test:coverage": "forge coverage",
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage"
   },

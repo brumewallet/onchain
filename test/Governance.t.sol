@@ -5,7 +5,6 @@ import "@forge-std/Test.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../src/Governance.sol";
-import "../src/Token.sol";
 
 contract GovernanceTest is Test {
     Governance public governance;
@@ -34,12 +33,12 @@ contract GovernanceTest is Test {
     function setUp() public {
         vm.startPrank(CREATOR);
 
-        originalToken = new Token(CREATOR);
+        originalToken = new Token("Test", "TEST");
         originalToken.mint(VOTER_1, VOTER_1_INITIAL_AMOUNT);
         originalToken.mint(VOTER_2, VOTER_2_INITIAL_AMOUNT);
         originalToken.mint(VOTER_3, VOTER_3_INITIAL_AMOUNT);
 
-        governance = new Governance(originalToken, INITIAL_OWNER, INITIAL_VOTING_DELAY);
+        governance = new Governance(originalToken, INITIAL_VOTING_DELAY);
 
         vm.stopPrank();
     }
