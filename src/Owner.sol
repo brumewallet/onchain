@@ -2,8 +2,10 @@
 pragma solidity ^0.8.20;
 
 import { Owned } from "./owned.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 contract Owner {
+    using SafeCast for *;
 
     Owned public collection;
 
@@ -22,18 +24,22 @@ contract Owner {
     }
 
     modifier onlyOwner() {
-        if (msg.sender == collection.ownerOf(uint256(uint160(address(this))))) {
+        if (msg.sender == owner()) {
             _;
         } else {
             revert();
         }
     }
 
-    function setImplementation(address implementation_) public onlyOwner {
+    function owner() public view returns (address) {
+        return collection.ownerOf(uint256(uint160(address(this))));
+    }
+
+    function setImplementation(address implementation_) external onlyOwner {
         implementation = implementation_;
     }
 
-    function dontcallme() external {
+    function dontcallme() external onlyOwner {
        assembly {
             calldatacopy(0, 0, calldatasize())
 
@@ -76,7 +82,7 @@ contract Owner {
     }
 
     function proxy() internal {
-        if (msg.sender == collection.ownerOf(uint256(uint160(address(this))))) {
+        if (msg.sender == owner()) {
             call();
         } else {
             staticcall();
@@ -84,7 +90,7 @@ contract Owner {
     }
 
     receive() external payable {
-        payable(collection.ownerOf(uint256(uint160(address(this))))).transfer(msg.value);
+        payable(owner()).transfer(msg.value);
     }
 
     fallback() external payable {

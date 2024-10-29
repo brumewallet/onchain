@@ -27,39 +27,30 @@ library MyStrings {
 
     bytes16 private constant HEX_DIGITS = "0123456789abcdef";
 
-    uint8 private constant ADDRESS_LENGTH = 20;
-
     error StringsInsufficientHexLength(uint256 value, uint256 length);
-
-    error StringsInvalidChar();
-
-    function toHexString(uint256 value) internal pure returns (string memory) {
-        unchecked {
-            return toHexString(value, Math.log256(value) + 1);
-        }
-    }
 
     function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
         uint256 localValue = value;
+
         bytes memory buffer = new bytes(2 * length + 2);
+
         buffer[0] = "0";
         buffer[1] = "x";
+
         for (uint256 i = 2 * length + 1; i > 1; --i) {
             buffer[i] = HEX_DIGITS[localValue & 0xf];
             localValue >>= 4;
         }
+
         if (localValue != 0) {
             revert StringsInsufficientHexLength(value, length);
         }
+
         return string(buffer);
     }
 
-    function toHexString(address addr) internal pure returns (string memory) {
-        return toHexString(uint256(uint160(addr)), ADDRESS_LENGTH);
-    }
-
     function toChecksumHexString(address addr) internal pure returns (string memory) {
-        bytes memory buffer = bytes(toHexString(addr));
+        bytes memory buffer = bytes(toHexString(uint256(uint160(addr)), 20));
 
         uint256 hashValue;
 
@@ -71,14 +62,17 @@ library MyStrings {
             if (hashValue & 0xf > 7 && uint8(buffer[i]) > 96) {
                 buffer[i] ^= 0x20;
             }
+
             hashValue >>= 4;
         }
+
         return string(buffer);
     }
 
 }
 
 contract Owned is ERC721, ERC721URIStorage, ERC721Enumerable {
+    using SafeCast for *;
 
     constructor()
         ERC721("Owned", "OWNED")
